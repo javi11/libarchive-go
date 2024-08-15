@@ -64,14 +64,19 @@ jobs:
             mingw-w64-x86_64-libarchive
             pkg-config
             perl
-            perl-pod-usage
+
+      - name: Install Pod::Usage Perl Module
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          cpan install Pod::Usage
 
       - name: Verify Installation on Windows
         if: matrix.os == 'windows-latest'
         shell: msys2 {0}
         run: |
           pacman -Q mingw-w64-x86_64-libarchive
-          pacman -Q perl-pod-usage
+          perl -MPod::Usage -e 'print "Pod::Usage is installed\n";'
           pkg-config --list-all
 
       - name: Build libarchive on Windows
