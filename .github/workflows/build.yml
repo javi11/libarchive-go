@@ -63,11 +63,22 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-libarchive
             pkg-config
+            perl
+            perl-pod-usage
 
+       - name: Verify Installation on Windows
+         if: matrix.os == 'windows-latest'
+         shell: msys2 {0}
+         run: |
+           pacman -Q mingw-w64-x86_64-libarchive
+           pacman -Q perl-pod-usage
+           pkg-config --list-all            
+  
       - name: Build libarchive on Windows
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
-        shell: bash
+        shell: msys2 {0}
         run: |
+          export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig
           mkdir -p build/windows_amd64
           cd build/windows_amd64
           pkg-config --cflags --libs libarchive
