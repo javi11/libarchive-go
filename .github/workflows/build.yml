@@ -66,14 +66,14 @@ jobs:
             perl
             perl-pod-usage
 
-       - name: Verify Installation on Windows
-         if: matrix.os == 'windows-latest'
-         shell: msys2 {0}
-         run: |
-           pacman -Q mingw-w64-x86_64-libarchive
-           pacman -Q perl-pod-usage
-           pkg-config --list-all            
-  
+      - name: Verify Installation on Windows
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          pacman -Q mingw-w64-x86_64-libarchive
+          pacman -Q perl-pod-usage
+          pkg-config --list-all
+
       - name: Build libarchive on Windows
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
         shell: msys2 {0}
