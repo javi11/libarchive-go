@@ -48,12 +48,24 @@ jobs:
           ar rcs libarchive.a libarchive.o
           ranlib libarchive.a
 
-      - name: Install Dependencies on Windows
+      - name: Install MSYS2 on Windows
+        if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
+        run: |
+          # Install MSYS2
+          curl -L -o msys2.zip https://github.com/msys2/msys2-installer/releases/download/2023-08-25/msys2-base-x86_64-20230825.sfx.exe
+          7z x msys2.zip -oC:\msys64
+
+          # Update MSYS2 and install required packages
+          C:\msys64\usr\bin\bash.exe -c "pacman -Syuu --noconfirm"
+          C:\msys64\usr\bin\bash.exe -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-libarchive pkg-config"
+
+          # Add MSYS2 to PATH
+          echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
+
+      - name: Build libarchive on Windows
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
         shell: bash
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm mingw-w64-x86_64-libarchive mingw-w64-x86_64-gcc
           mkdir -p build/windows_amd64
           cd build/windows_amd64
           pkg-config --cflags --libs libarchive
