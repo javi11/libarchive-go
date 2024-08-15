@@ -119,11 +119,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add and Commit Static Libraries
-        run: |
-          git add build/
-          git commit -m "Add pre-built libarchive static libraries"
-
-      - name: Push Changes
-        run: |
-          git push origin HEAD:${{ github.ref }}
+      - uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        file_pattern: '*.a'
+        commit_message: Built rapidyenc
