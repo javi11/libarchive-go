@@ -1,0 +1,99 @@
+name: Build and Commit libarchive Static Libraries
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Static Libraries
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [amd64, arm64]
+        exclude:
+          - os: windows-latest
+            arch: arm64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies on Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-dev build-essential pkg-config
+          mkdir -p build/linux_${{ matrix.arch }}
+          cd build/linux_${{ matrix.arch }}
+          pkg-config --cflags --libs libarchive
+          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../../libarchive.c
+          ar rcs libarchive.a libarchive.o
+          ranlib libarchive.a
+
+      - name: Install Dependencies on macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install libarchive
+          mkdir -p build/darwin_${{ matrix.arch }}
+          cd build/darwin_${{ matrix.arch }}
+          pkg-config --cflags --libs libarchive
+          clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos11 -fPIC -O2 -g -c ../../libarchive.c
+          ar rcs libarchive.a libarchive.o
+          ranlib libarchive.a
+
+      - name: Install Dependencies on Windows
+        if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
+        shell: bash
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm mingw-w64-x86_64-libarchive mingw-w64-x86_64-gcc
+          mkdir -p build/windows_amd64
+          cd build/windows_amd64
+          pkg-config --cflags --libs libarchive
+          x86_64-w64-mingw32-gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../../libarchive.c
+          x86_64-w64-mingw32-ar rcs libarchive.a libarchive.o
+          x86_64-w64-mingw32-ranlib libarchive.a
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: libarchive-static-libs
+          path: |
+            build/linux_${{ matrix.arch }}/libarchive.a
+            build/darwin_${{ matrix.arch }}/libarchive.a
+            build/windows_amd64/libarchive.a
+
+  commit:
+    name: Commit and Push Static Libraries
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: libarchive-static-libs
+          path: .
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add and Commit Static Libraries
+        run: |
+          git add build/
+          git commit -m "Add pre-built libarchive static libraries"
+
+      - name: Push Changes
+        run: |
+          git push origin HEAD:${{ github.ref }}
