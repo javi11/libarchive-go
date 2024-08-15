@@ -32,7 +32,7 @@ jobs:
           mkdir -p build
           cd build
           pkg-config --cflags --libs libarchive
-          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../../src/libarchive.c
+          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../src/libarchive.c
           ar rcs libarchive.a libarchive_linux_${{ matrix.arch }}.o
           ranlib libarchive_linux_${{ matrix.arch }}.a
 
@@ -47,9 +47,9 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           if [ "${{ matrix.arch }}" = "amd64" ]; then
-            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../../src/libarchive.c
+            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../src/libarchive.c
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
-            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../../src/libarchive.c
+            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../src/libarchive.c
           fi
           ar rcs libarchive.a libarchive_darwin_${{ matrix.arch }}.o
           ranlib libarchive_darwin_${{ matrix.arch }}.a
@@ -87,7 +87,7 @@ jobs:
           mkdir -p build
           cd build
           pkg-config --cflags --libs libarchive
-          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../../src/libarchive.c
+          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../src/libarchive.c
           ar rcs libarchive_windows_amd64.a libarchive.o
           ranlib libarchive_windows_amd64.a
 
