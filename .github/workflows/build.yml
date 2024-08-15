@@ -46,7 +46,11 @@ jobs:
           mkdir -p build/darwin_${{ matrix.arch }}
           cd build/darwin_${{ matrix.arch }}
           pkg-config --cflags --libs libarchive
-          clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos11 -fPIC -O2 -g -c ../../src/libarchive.c
+          if [ "${{ matrix.arch }}" = "amd64" ]; then
+            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../../src/libarchive.c
+          elif [ "${{ matrix.arch }}" = "arm64" ]; then
+            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../../src/libarchive.c
+          fi
           ar rcs libarchive.a libarchive.o
           ranlib libarchive.a
 
