@@ -2,7 +2,8 @@ package libarchive
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/src
-#cgo darwin LDFLAGS: ${SRCDIR}/libarchive_darwin.a -lstdc++
+#cgo darwin,arm64 LDFLAGS: ${SRCDIR}/libarchive_darwin_arm64.a -lstdc++
+#cgo darwin,amd64 LDFLAGS: ${SRCDIR}/libarchive_darwin_amd64.a -lstdc++
 #cgo windows,amd64 LDFLAGS: ${SRCDIR}/libarchive_windows_amd64.a -lstdc++
 #cgo linux,amd64 LDFLAGS: ${SRCDIR}/libarchive_linux_amd64.a -lstdc++
 #cgo linux,arm64 LDFLAGS: ${SRCDIR}libarchive_linux_arm64.a -lstdc++
