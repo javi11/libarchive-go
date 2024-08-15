@@ -96,9 +96,9 @@ jobs:
         with:
           name: libarchive-static-libs
           path: |
-            build/linux_${{ matrix.arch }}/libarchive.a
-            build/darwin_${{ matrix.arch }}/libarchive.a
-            build/windows_amd64/libarchive.a
+            build/libarchive_${{ matrix.arch }}.a
+            build/libarchive_${{ matrix.arch }}.a
+            build/libarchive_windows_amd64.a
 
   commit:
     name: Commit and Push Static Libraries
