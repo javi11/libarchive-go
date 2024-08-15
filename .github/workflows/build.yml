@@ -33,7 +33,7 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../src/libarchive.c
-          ar rcs libarchive.a libarchive_linux_${{ matrix.arch }}.o
+          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o
           ranlib libarchive_linux_${{ matrix.arch }}.a
 
       - name: Build on macOS
