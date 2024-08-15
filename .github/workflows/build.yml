@@ -44,6 +44,7 @@ jobs:
           mkdir -p build/darwin_${{ matrix.arch }}
           cd build/darwin_${{ matrix.arch }}
           pkg-config --cflags --libs libarchive
+          export PATH="/opt/homebrew/opt/libarchive/bin:$PATH"
           clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos11 -fPIC -O2 -g -c ../../src/libarchive.c
           ar rcs libarchive.a libarchive.o
           ranlib libarchive.a
