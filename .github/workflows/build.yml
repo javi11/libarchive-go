@@ -51,7 +51,7 @@ jobs:
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
             clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../src/libarchive.c
           fi
-          ar rcs libarchive.a libarchive_darwin_${{ matrix.arch }}.o
+          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o
           ranlib libarchive_darwin_${{ matrix.arch }}.a
 
       - uses: msys2/setup-msys2@v2
