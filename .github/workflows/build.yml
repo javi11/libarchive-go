@@ -32,7 +32,7 @@ jobs:
           mkdir -p build/linux_${{ matrix.arch }}
           cd build/linux_${{ matrix.arch }}
           pkg-config --cflags --libs libarchive
-          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../../libarchive.c
+          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../../src/libarchive.c
           ar rcs libarchive.a libarchive.o
           ranlib libarchive.a
 
@@ -44,23 +44,19 @@ jobs:
           mkdir -p build/darwin_${{ matrix.arch }}
           cd build/darwin_${{ matrix.arch }}
           pkg-config --cflags --libs libarchive
-          clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos11 -fPIC -O2 -g -c ../../libarchive.c
+          clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos11 -fPIC -O2 -g -c ../../src/libarchive.c
           ar rcs libarchive.a libarchive.o
           ranlib libarchive.a
 
-      - name: Install MSYS2 on Windows
+      - uses: msys2/setup-msys2@v2
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
-        run: |
-          # Install MSYS2
-          curl -L -o msys2.zip https://github.com/msys2/msys2-installer/releases/download/2023-08-25/msys2-base-x86_64-20230825.sfx.exe
-          7z x msys2.zip -oC:\msys64
-
-          # Update MSYS2 and install required packages
-          C:\msys64\usr\bin\bash.exe -c "pacman -Syuu --noconfirm"
-          C:\msys64\usr\bin\bash.exe -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-libarchive pkg-config"
-
-          # Add MSYS2 to PATH
-          echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-libarchive
+            pkg-config
 
       - name: Build libarchive on Windows
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
@@ -69,9 +65,9 @@ jobs:
           mkdir -p build/windows_amd64
           cd build/windows_amd64
           pkg-config --cflags --libs libarchive
-          x86_64-w64-mingw32-gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../../libarchive.c
-          x86_64-w64-mingw32-ar rcs libarchive.a libarchive.o
-          x86_64-w64-mingw32-ranlib libarchive.a
+          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../../src/libarchive.c
+          ar rcs libarchive.a libarchive.o
+          ranlib libarchive.a
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
