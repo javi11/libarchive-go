@@ -44,6 +44,7 @@ jobs:
           brew install libarchive
           export PKG_CONFIG_PATH="/opt/homebrew/opt/libarchive/lib/pkgconfig"
           echo 'export PATH="/opt/homebrew/opt/libarchive/bin:$PATH"' >> /Users/runner/.bash_profile
+          LIBARCHIVE_PATH=$(brew --prefix libarchive)/lib/libarchive.a
           mkdir -p build
           cd build
           pkg-config --cflags --libs libarchive
@@ -53,7 +54,7 @@ jobs:
             clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../src/libarchive.c
           fi
           ar rcs libarchive_darwin_${{ matrix.arch }}-pre.a libarchive.o
-          ar -x /usr/local/opt/libarchive/lib/libarchive.a
+          ar -x $LIBARCHIVE_PATH
           ar rcs libarchive_darwin_${{ matrix.arch }}.a *.o
 
       - uses: msys2/setup-msys2@v2
