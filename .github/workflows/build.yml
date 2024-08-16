@@ -33,8 +33,9 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../src/libarchive.c
-          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o
-          ranlib libarchive_linux_${{ matrix.arch }}.a
+          ar rcs libarchive_linux_${{ matrix.arch }}-pre.a libarchive.o
+          ar -x /usr/lib/x86_64-linux-gnu/libarchive.a
+          ar rcs libarchive_linux_${{ matrix.arch }}.a *.o
 
       - name: Build on macOS
         if: matrix.os == 'macos-latest'
@@ -51,8 +52,9 @@ jobs:
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
             clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../src/libarchive.c
           fi
-          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o
-          ranlib libarchive_darwin_${{ matrix.arch }}.a
+          ar rcs libarchive_darwin_${{ matrix.arch }}-pre.a libarchive.o
+          ar -x /usr/local/opt/libarchive/lib/libarchive.a
+          ar rcs libarchive_darwin_${{ matrix.arch }}.a *.o
 
       - uses: msys2/setup-msys2@v2
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
@@ -88,8 +90,9 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../src/libarchive.c
-          ar rcs libarchive_windows_amd64.a libarchive.o
-          ranlib libarchive_windows_amd64.a
+          ar rcs libarchive_windows_amd64-pre.a libarchive.o
+          ar -x /mingw64/lib/libarchive.a
+          ar rcs libarchive_windows_amd64.a *.o
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
