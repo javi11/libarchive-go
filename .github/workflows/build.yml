@@ -33,7 +33,7 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           gcc -shared -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../libarchive.c
-          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o `pkg-config --libs --static libarchive`
+          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o
           ranlib libarchive_linux_${{ matrix.arch }}.a
 
       - name: Build on macOS
@@ -51,7 +51,7 @@ jobs:
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
             clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           fi
-          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o `pkg-config --libs --static libarchive`
+          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o
           ranlib libarchive_darwin_${{ matrix.arch }}.a
 
       - uses: msys2/setup-msys2@v2
@@ -88,7 +88,7 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../libarchive.c
-          ar rcs libarchive_windows_amd64.a libarchive.o `pkg-config --libs --static libarchive`
+          ar rcs libarchive_windows_amd64.a libarchive.o
           ranlib libarchive_windows_amd64.a
 
       - name: Upload Build Artifacts
