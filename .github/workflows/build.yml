@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          gcc -c -o libarchive.o -fPIC -O2 -g -c ../libarchive.c
+          gcc -llibarchive -c -o libarchive.o -fPIC -O2 -g -c ../libarchive.c
           ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o
           ranlib libarchive_linux_${{ matrix.arch }}.a
 
@@ -41,9 +41,9 @@ jobs:
           mkdir -p build
           cd build
           if [ "${{ matrix.arch }}" = "amd64" ]; then
-            clang -c -o libarchive.o -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
+            clang -llibarchive -c -o libarchive.o -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
-            clang -c -o libarchive.o -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
+            clang -llibarchive -c -o libarchive.o -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           fi
           ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o
           ranlib libarchive_darwin_${{ matrix.arch }}.a
@@ -75,7 +75,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          gcc -c -o libarchive.o -O2 -g -c ../libarchive.c
+          gcc -llibarchive -c -o libarchive.o -O2 -g -c ../libarchive.c
           ar rcs libarchive_windows_amd64.a libarchive.o
           ranlib libarchive_windows_amd64.a
 
