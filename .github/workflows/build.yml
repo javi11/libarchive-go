@@ -23,29 +23,35 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          submodules: true
 
       - name: Build on Linux
         if: matrix.os == 'ubuntu-latest'
         run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-dev build-essential pkg-config
           mkdir -p build
           cd build
-          gcc -c -o libarchive.o -llibarchive -L/libarchive/libarchive -fPIC -O2 -g -c ../libarchive.c
-          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o
+          pkg-config --cflags --libs libarchive
+          gcc -shared -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../libarchive.c
+          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o `pkg-config --libs --static libarchive`
           ranlib libarchive_linux_${{ matrix.arch }}.a
 
       - name: Build on macOS
         if: matrix.os == 'macos-latest'
         run: |
+          brew update
+          brew install libarchive
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/libarchive/lib/pkgconfig"
+          echo 'export PATH="/opt/homebrew/opt/libarchive/bin:$PATH"' >> /Users/runner/.bash_profile
           mkdir -p build
           cd build
+          pkg-config --cflags --libs libarchive
           if [ "${{ matrix.arch }}" = "amd64" ]; then
-            clang -c -o libarchive.o -llibarchive -L/libarchive/libarchive -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
+            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
-            clang -c -o libarchive.o -llibarchive -L/libarchive/libarchive -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
+            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           fi
-          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o
+          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o `pkg-config --libs --static libarchive`
           ranlib libarchive_darwin_${{ matrix.arch }}.a
 
       - uses: msys2/setup-msys2@v2
@@ -55,6 +61,8 @@ jobs:
           update: true
           install: >-
             mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-libarchive
+            pkg-config
             perl
 
       - name: Install Pod::Usage Perl Module
@@ -67,16 +75,20 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: msys2 {0}
         run: |
+          pacman -Q mingw-w64-x86_64-libarchive
           perl -MPod::Usage -e 'print "Pod::Usage is installed\n";'
+          pkg-config --list-all
 
       - name: Build libarchive on Windows
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
         shell: msys2 {0}
         run: |
+          export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig
           mkdir -p build
           cd build
-          gcc -c -o libarchive.o -llibarchive -L/libarchive/libarchive -O2 -g -c ../libarchive.c
-          ar rcs libarchive_windows_amd64.a libarchive.o
+          pkg-config --cflags --libs libarchive
+          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../libarchive.c
+          ar rcs libarchive_windows_amd64.a libarchive.o `pkg-config --libs --static libarchive`
           ranlib libarchive_windows_amd64.a
 
       - name: Upload Build Artifacts
@@ -95,8 +107,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          submodules: true
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
