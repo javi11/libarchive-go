@@ -33,7 +33,7 @@ jobs:
           mkdir -p build
           cd build
           pkg-config --cflags --libs libarchive
-          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../libarchive.c
+          gcc -c -o libarchive.o -fPIC -O2 -g -c ../libarchive.c
           ar rcs libarchive_linux_${{ matrix.arch }}-pre.a libarchive.o
           ar -x /usr/lib/x86_64-linux-gnu/libarchive.a
           ar rcs libarchive_linux_${{ matrix.arch }}.a *.o
@@ -50,9 +50,9 @@ jobs:
           cd build
           pkg-config --cflags --libs libarchive
           if [ "${{ matrix.arch }}" = "amd64" ]; then
-            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
+            clang -c -o libarchive.o -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           elif [ "${{ matrix.arch }}" = "arm64" ]; then
-            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
+            clang -c -o libarchive.o -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
           fi
           ar rcs libarchive_darwin_${{ matrix.arch }}-pre.a libarchive.o
           ar -x $LIBARCHIVE_PATH
@@ -91,7 +91,7 @@ jobs:
           mkdir -p build
           cd build
           pkg-config --cflags --libs libarchive
-          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../libarchive.c
+          gcc -c -o libarchive.o -O2 -g -c ../libarchive.c
           ar rcs libarchive_windows_amd64-pre.a libarchive.o
           ar -x /mingw64/lib/libarchive.a
           ar rcs libarchive_windows_amd64.a *.o
