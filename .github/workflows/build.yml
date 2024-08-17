@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Build on Linux
         if: matrix.os == 'ubuntu-latest'
@@ -94,6 +96,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
