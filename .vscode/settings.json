@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "cgo_export.h": "c"
+        "cgo_export.h": "c",
+        "archive_entry.h": "c"
     }
 }

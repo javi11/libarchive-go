@@ -1,5 +1,5 @@
-#include <archive.h>
-#include <archive_entry.h>
+#include <libarchive/libarchive/archive.h>
+#include <libarchive/libarchive/archive_entry.h>
 #include <stdlib.h>
 
 int64_t seekCb(struct archive *a, char *client_data, int64_t request, int whence);
