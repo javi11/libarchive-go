@@ -67,7 +67,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: msys2 {0}
         run: |
-          pacman -Q mingw-w64-x86_64-libarchive
           perl -MPod::Usage -e 'print "Pod::Usage is installed\n";'
 
       - name: Build libarchive on Windows
