@@ -5,7 +5,7 @@ package libarchive
 #include <archive.h>
 #include <archive_entry.h>
 #include <stdlib.h>
-#include "./bindings/binding.h"
+#include "./binding.h"
 */
 import "C"
 import (
