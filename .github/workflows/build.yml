@@ -31,10 +31,13 @@ jobs:
           sudo apt-get install -y libarchive-dev build-essential pkg-config
           mkdir -p build
           cd build
-          pkg-config --cflags --libs libarchive
-          gcc -shared -c -o libarchive.o $(pkg-config --cflags libarchive) -fPIC -O2 -g -c ../libarchive.c
-          ar rcs libarchive_linux_${{ matrix.arch }}.a libarchive.o
-          ranlib libarchive_linux_${{ matrix.arch }}.a
+          # Extract static libarchive files
+          ar x $(pkg-config --variable=libdir libarchive)/libarchive.a
+          # Compile bindings.c
+          gcc -c -o bindings.o $(pkg-config --cflags libarchive) -fPIC -O2 -g ../bindings.c
+          # Create the final bindings.a
+          ar rcs bindings_linux_${{ matrix.arch }}.a *.o
+          ranlib bindings_linux_${{ matrix.arch }}.a
 
       - name: Build on macOS
         if: matrix.os == 'macos-latest'
@@ -42,17 +45,15 @@ jobs:
           brew update
           brew install libarchive
           export PKG_CONFIG_PATH="/opt/homebrew/opt/libarchive/lib/pkgconfig"
-          echo 'export PATH="/opt/homebrew/opt/libarchive/bin:$PATH"' >> /Users/runner/.bash_profile
           mkdir -p build
           cd build
-          pkg-config --cflags --libs libarchive
-          if [ "${{ matrix.arch }}" = "amd64" ]; then
-            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
-          elif [ "${{ matrix.arch }}" = "arm64" ]; then
-            clang -c -o libarchive.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../libarchive.c
-          fi
-          ar rcs libarchive_darwin_${{ matrix.arch }}.a libarchive.o
-          ranlib libarchive_darwin_${{ matrix.arch }}.a
+          # Extract static libarchive files
+          ar x $(pkg-config --variable=libdir libarchive)/libarchive.a
+          # Compile bindings.c
+          clang -c -o bindings.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos12.0 -fPIC -O2 -g ../bindings.c
+          # Create the final bindings.a
+          ar rcs bindings_darwin_${{ matrix.arch }}.a *.o
+          ranlib bindings_darwin_${{ matrix.arch }}.a
 
       - uses: msys2/setup-msys2@v2
         if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
@@ -86,19 +87,22 @@ jobs:
           export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig
           mkdir -p build
           cd build
-          pkg-config --cflags --libs libarchive
-          gcc -c -o libarchive.o $(pkg-config --cflags libarchive) -O2 -g -c ../libarchive.c
-          ar rcs libarchive_windows_amd64.a libarchive.o
-          ranlib libarchive_windows_amd64.a
+          # Extract static libarchive files
+          ar x $(pkg-config --variable=libdir libarchive)/libarchive.a
+          # Compile bindings.c
+          gcc -c -o bindings.o $(pkg-config --cflags libarchive) -O2 -g ../bindings.c
+          # Create the final bindings.a
+          ar rcs bindings_windows_amd64.a *.o
+          ranlib bindings_windows_amd64.a
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: libarchive-static-libs
           path: |
-            build/libarchive_darwin_${{ matrix.arch }}.a
-            build/libarchive_linux_${{ matrix.arch }}.a
-            build/libarchive_windows_amd64.a
+            build/bindings_darwin_${{ matrix.arch }}.a
+            build/bindings_linux_${{ matrix.arch }}.a
+            build/bindings_windows_amd64.a
 
   commit:
     name: Commit and Push Static Libraries

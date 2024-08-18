@@ -10,7 +10,7 @@ package libarchive
 #include <archive.h>
 #include <archive_entry.h>
 #include <stdlib.h>
-#include "libarchive.h"
+#include "bindings.h"
 */
 import "C"
 import (
