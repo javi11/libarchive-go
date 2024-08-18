@@ -50,7 +50,11 @@ jobs:
           # Extract static libarchive files
           ar x $(pkg-config --variable=libdir libarchive)/libarchive.a
           # Compile bindings.c
-          clang -c -o bindings.o $(pkg-config --cflags libarchive) -target ${{ matrix.arch }}-apple-macos12.0 -fPIC -O2 -g ../bindings.c
+          if [ "${{ matrix.arch }}" = "amd64" ]; then
+            clang -c -o bindings.o $(pkg-config --cflags libarchive) -target x86_64-apple-macos12.0 -fPIC -O2 -g -c ../bindings.c
+          elif [ "${{ matrix.arch }}" = "arm64" ]; then
+            clang -c -o bindings.o $(pkg-config --cflags libarchive) -target arm64-apple-macos12.0 -fPIC -O2 -g -c ../bindings.c
+          fi
           # Create the final bindings.a
           ar rcs bindings_darwin_${{ matrix.arch }}.a *.o
           ranlib bindings_darwin_${{ matrix.arch }}.a
