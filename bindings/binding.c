@@ -1,6 +1,6 @@
 #include <archive.h>
 #include <archive_entry.h>
-#include "cgo_export.h"
+#include "_cgo_export.h"
 
 int64_t seek_cb_binding(struct archive *a, char *client_data, int64_t request, int whence)
 {

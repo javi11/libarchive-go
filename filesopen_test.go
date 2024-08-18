@@ -15,7 +15,7 @@ func TestNewFilesOpen(t *testing.T) {
 		"./fixtures/test_read_format_rar_multivolume.part0004.rar.uu",
 	}
 
-	fo, err := NewFilesOpen(files, &customFs{})
+	fo, err := NewFilesOpen(files, "", &customFs{})
 	if err != nil {
 		t.Fatalf("Error on creating Archive from a io.Reader:\n %s", err)
 	}

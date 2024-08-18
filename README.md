@@ -16,6 +16,12 @@ libarchive go bindings
 go get github.com/javi11/libarchive-go
 ```
 
+You will need to have libarchive installed with pkg-config support.
+
+```bash
+sudo apt-get install libarchive-dev
+```
+
 ## Usage
 
 ### Read from multipart files

@@ -1,5 +1,6 @@
 package libarchive
 
+//#cgo pkg-config: libarchive
 // #include <archive.h>
 import "C"
 import (
