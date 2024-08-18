@@ -19,7 +19,8 @@ jobs:
         exclude:
           - os: windows-latest
             arch: arm64
-
+          - os: macos-latest
+            arch: amd64
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
