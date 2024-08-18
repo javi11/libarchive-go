@@ -122,4 +122,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: "*.a"
-          commit_message: Built rapidyenc
+          commit_message: Built libarchive static libraries
